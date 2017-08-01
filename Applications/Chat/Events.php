@@ -30,9 +30,6 @@ class Events{
   public static function onMessage($client_id, $message){
     $message = json_decode($message);
     $message->time = date('Y-m-d H:i:s');
-    // 将相同客服的用户id放到一个组里面
-    $server_1 = [];
-    $server_2 = [];
     if($message->type === 'server'){
       Gateway::bindUid($client_id, $message->from);
       if($message->to){
@@ -41,7 +38,7 @@ class Events{
     }else if($message->type === 'user'){
       $message->from = $client_id;
       Gateway::joinGroup($client_id, $message->to);
-      var_export(Gateway::getClientSessionsByGroup($message->to));
+      //var_export(Gateway::getClientSessionsByGroup($message->to));
       $message->userlist = Gateway::getClientSessionsByGroup($message->to);
       Gateway::sendToUid($message->to, json_encode($message));
     }
@@ -53,7 +50,13 @@ class Events{
   * @param int $client_id 连接id
   */
   public static function onClose($client_id){
-       // 向所有人发送
-       GateWay::sendToAll("$client_id logout");
+    $message->type = 'logout';
+    $message->msg = '';
+    $message->to = '';
+    $message->from = $client_id;
+    $message->time = '';
+    $message->userlist = [];
+    // 向所有人发送
+    GateWay::sendToAll(json_encode($message));
   }
 }

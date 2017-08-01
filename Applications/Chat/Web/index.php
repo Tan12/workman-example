@@ -81,7 +81,7 @@ $(function(){
     if($data.indexOf('{') !== -1){
       $obj = $.parseJSON($data);
       console.log($obj)
-      if($obj.type !== 'ping'){
+      if($obj.type === 'server'){
         $p = $('<p>').text($obj.type + '对你说： ' + $obj.msg);
         $message.to = $obj.from;
         $message.from = $obj.to;
