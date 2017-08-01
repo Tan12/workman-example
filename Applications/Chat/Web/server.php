@@ -89,7 +89,9 @@ $(function(){
       console.log($message);
       ws.send(JSON.stringify($message));
       $p = $('<p>').text($msg.val());
-      $showBox.append($p);
+      var tag = userNum($message.to);
+      //console.log(tag);
+      $('#show-msg-' + tag).append($p);
     }
     // 使滚动条保持在底部，即显示最新消息
     /*if(heightChange()){
@@ -126,17 +128,8 @@ $(function(){
           $('#usernum').text(i);
         }else{
           // 如果是已经在聊天的用户则找到对应聊天框添加对话
-          var x = 0, 
-              $ops = $userList.children('option'),
-              l = $ops.length,
-              tag; // 用户n
-          for(x; x < l; x++){
-            if($ops.eq(x).val() === $obj.from){
-              var u = $ops.eq(x).text();
-              tag = u.substr(u.length-1, 1);
-            }
-          }
-          console.log(tag);
+          tag = userNum($obj.from);
+          //console.log(tag);
           $('#show-msg-' + tag).append($p);
         }
       }else if($obj.type === 'logout'){ // 有用户退出，只有type跟from有值
@@ -169,6 +162,21 @@ $(function(){
     }
   };
 
+  // 返回uid对应的是用户几
+  function userNum(uid){
+    var x = 0, 
+        $ops = $userList.children('option'),
+        l = $ops.length,
+        tag; // 用户n
+    for(x; x < l; x++){
+      if($ops.eq(x).val() === uid){
+        var u = $ops.eq(x).text();
+        tag = u.substr(u.length-1, 1);
+      }
+    }
+    return tag;
+  }
+
   // 切换聊天用户
   $userList.change(function(){
     var index = $(this).get(0).selectedIndex + 1;
@@ -197,6 +205,7 @@ $(function(){
     return 0;
   }
 
+  // 随机颜色
   function randColor(){
     var r=Math.floor(Math.random()*256);
     var g=Math.floor(Math.random()*256);
