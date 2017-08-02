@@ -8,9 +8,12 @@
       font-size: 18px;
     }
     .container{
-      width: 60%;
+      width: 1000px;
       margin: 0 auto;
       margin-top: 20px;
+    }
+    #user-list{
+      margin-top: 30px;
     }
     .show-box{
       width: 100%;
@@ -18,30 +21,54 @@
       height: 480px;
       border: 1px solid #333;
     }
-    .show-box .username{
-      background-color: white;
-      text-align: center;
-    }
     .show-box div[id^='show-msg']{
-      width: 58%;
+      width: 980px;
       height: 460px;
       overflow-y: auto;
+      overflow-x: hidden;
       position: absolute;
       margin: 10px;
-      border: 1px solid red;
       background-color: white;
+    }
+    .show-box section{
+      clear: both;
     }
     .show-box p{
       background-color: lightblue;
-
+      max-width: 600px;
+      padding: 5px;
+      border-radius: 5px;
+      display: inline-block;
+      position:relative;
+      vertical-align: top;
+      word-wrap:break-word
+    }
+    .show-box p.left{
+      margin-left: 10px;
+    }
+    .show-box p.left::before,
+    .show-box p.right::before{
+      content: '';
+      width: 0;
+      height: 0;
+      border: 8px solid transparent;
+      position: absolute;
+    }
+    .show-box p.left::before{
+      border-right-color: lightblue;
+      transform: translateX(-20px);
+    }
+    .show-box p.right{
+      margin-right: 10px;
+      float: right;
+    }
+    .show-box p.right::before{
+      border-left-color: lightblue;
+      right: -15px;
     }
     #user-list{
       margin-top: 30px;
       padding: 10px 0;
-    }
-    #chat-box{
-      margin-top: 30px;
-      text-align: center;
     }
     .current-user{
       z-index: 1024;
@@ -63,12 +90,18 @@
       margin-left: -5px;
       border-left: transparent;
     }
+
+    /*当前用户标签样式*/
     .current{
       color: #44b549;
       font-weight: bold;
     }
 
     /*输入框*/
+    #chat-box{
+      margin-top: 30px;
+      text-align: center;
+    }
     #msg{
       width: 50%;
       border: 1px solid #44b549;
@@ -93,18 +126,10 @@
     <option value="002">客服2</option>
   </select>
 
-  <form id="user-list">
-    <input type="radio" id="user10" class="hidden" value="7f00000108fc0000000c" name="user" checked="checked">
-    <label class="current" for="user10">用户10</label>
-    <input type="radio" id="user20" class="hidden" value="7f00000108fc0000000c" name="user" checked="checked">
-    <label for="user20">用户20</label>
-    <input type="radio" id="user20" class="hidden" value="7f00000108fc0000000c" name="user" checked="checked">
-    <label for="user20">用户20</label>
-  </form>
+  <form id="user-list"></form>
 
-  <div class="show-box">
-    <p>当前用户：用户<span id="usernum">1</span></p>
-  </div>
+  <div class="show-box"></div>
+
   <form id="chat-box">
       <input id="msg" type="text" name="message" />
       <input id="sm" type="submit" name="submit" value="提交" />

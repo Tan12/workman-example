@@ -4,26 +4,91 @@
     <title>客户端</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <style>
-        .container{
-          width: 80%;
-          margin: 0 auto;
-          margin-top: 20px;
-        }
-        #show-msg{
-          width: 400px;
-          height: 300px;
-          overflow-y: scroll;
-          background-color: lightblue;
-          margin: 30px 0;
-        }
+      .select{
+        width: 100px;
+        margin: 0 auto;
+      }
+      .container{
+        width: 520px;
+        margin: 0 auto;
+        margin-top: 20px;
+        border: 1px solid #333;
+      }
+      #show-msg{
+        width: 500px;
+        height: 500px;
+        margin: 10px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background-color: white;
+      }
+      #show-msg section{
+        clear: both;
+      }
+      #show-msg p{
+        background-color: lightblue;
+        max-width: 420px;
+        padding: 5px;
+        border-radius: 5px;
+        display: inline-block;
+        position:relative;
+        vertical-align: top;
+        word-wrap:break-word
+      }
+      #show-msg p.left{
+        margin-left: 10px;
+      }
+      #show-msg p.left::before,
+      #show-msg p.right::before{
+        content: '';
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        position: absolute;
+      }
+      #show-msg p.left::before{
+        border-right-color: lightblue;
+        transform: translateX(-20px);
+      }
+      #show-msg p.right{
+        margin-right: 10px;
+        float: right;
+      }
+      #show-msg p.right::before{
+        border-left-color: lightblue;
+        right: -15px;
+      }
+
+      /*输入框*/
+      #chat-box{
+        text-align: center;
+        margin: 10px 0;
+      }
+      #msg{
+        width: 80%;
+        border: 1px solid #44b549;
+        padding: 8px 5px;
+      }
+      #sm{
+        padding: 6px 20px;
+        background-color: white;
+        border: 1px solid #44b549;
+      }
+      #msg,
+      #sm{
+        border-radius: 5px;
+      }
     </style>
 </head>
 <body>
-<p>请选择客服：</p>
-<select id="server-list">
-  <option value="001">客服1</option>
-  <option value="002">客服2</option>
-</select>
+<div class="select">
+  <p>请选择客服：</p>
+  <select id="server-list">
+    <option value="001">客服1</option>
+    <option value="002">客服2</option>
+  </select>
+</div>
+
 <div class="container">
     <div id="show-msg"></div>
     <form id="chat-box">
@@ -33,99 +98,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script>
-$(function(){
-  ws = new WebSocket("ws://"+document.domain+":2333");
-  ws.onopen = function() {
-      console.log("连接成功");
-  };
-  var $showMsg = $('#show-msg'),
-      $chatBox = $('#chat-box'),
-      $msg = $('#msg'),
-      $sm = $('#sm'),
-      $serverList = $('#server-list'),
-      $message = {},
-      height = $showMsg.height();
-
-  $message.type = 'user'; // 发消息的人，默认是客服
-  $message.msg = ''; // 消息内容
-  $message.to = ''; // 这个消息是发给谁的
-  $message.from = ''; // 这个消息是来自谁的
-  $message.time = '';
-
-  // 表单提交
-  $chatBox.submit(function(){
-    if(!$msg.val()){
-      alert('please input something.');
-    }else{
-      $message.to = $serverList.val();
-      $message.msg = $msg.val();   
-      //console.log(JSON.stringify($message));
-      console.log($message);
-      ws.send(JSON.stringify($message));
-      $p = $('<p>').text($msg.val());
-      $showMsg.append($p);
-    }
-    // 使滚动条保持在底部，即显示最新消息
-    if(heightChange()){
-      $(window).scrollTop(height);
-    }
-    return false;
-  }); 
-  ws.onmessage = function(msg){
-    //console.log(msg);
-    var $data = msg.data,
-        $user2, $p;
-
-    // 判断是不是json数据，不是的话就是欢迎语
-    if($data.indexOf('{') !== -1){
-      $obj = $.parseJSON($data);
-      console.log($obj)
-      if($obj.type === 'server'){
-        $p = $('<p>').text($obj.type + '对你说： ' + $obj.msg);
-        $message.to = $obj.from;
-        $message.from = $obj.to;
-        $showMsg.append($p);
-      }
-    }else{
-      console.log($data);
-    }
-  };
-
-    // 生成唯一的用户id号
-    function creatUid(len, radix) {
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uid = [],
-            i = 0;
-        radix = radix || chars.length;
-
-        if(len){
-            for (i; i < len; i++){
-              uid[i] = chars[0 | Math.random() * radix];
-            }
-        }else{
-            var r;
-            uid[8] = uid[13] = uid[18] = uid[23] = '-';
-            uid[14] = '4';
-            for (i; i < 36; i++) {
-                if (!uid[i]) {
-                    r = 0 | Math.random() * 16;
-                    uid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-                }
-            }
-        }
-        return uid.join('');
-    }
-
-  // 判断show-msg高度是否发生改变
-  function heightChange(){
-      if($showMsg.height() > height){
-          height = $showMsg.height();
-          return 1;
-      }
-      return 0;
-  }
-});
-</script>
+<script src="index.js"></script>
 </body>
 </html>

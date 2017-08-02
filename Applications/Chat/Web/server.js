@@ -35,10 +35,12 @@ $(function(){
       //console.log(JSON.stringify($message));
       console.log($message);
       ws.send(JSON.stringify($message));
-      $p = $('<p>').text($msg.val());
-      var tag = userNum($message.to);
+      var $section = $('<section>'),
+          $p = $('<p>').text($msg.val()).addClass('right'),
+          tag = userNum($message.to);
       //console.log(tag);
-      $('#show-msg-' + tag).append($p);
+      $section.append($p);
+      $('#show-msg-' + tag).append($section);
     }
     // 使滚动条保持在底部，即显示最新消息
     /*if(heightChange()){
@@ -51,6 +53,7 @@ $(function(){
     //console.log(msg);
     var $data = msg.data,
         $user2,
+        $obj,
         user_id; // 用户唯一id
 
     // 判断是不是json数据，不是的话就是欢迎语
@@ -58,7 +61,9 @@ $(function(){
       $obj = $.parseJSON($data);
       console.log($obj)
       if($obj.type === 'user'){
-        var $p = $('<p>').text($obj.type + '对你说： ' + $obj.msg);
+        var $section = $('<section>'),
+            $p = $('<p>').text($obj.msg).addClass('left');
+        $section.append($p);
 
         // 如果是新用户则添加到用户列表，且新建一个聊天框
         if(!in_array(cur_users, $obj.from)){
@@ -68,6 +73,7 @@ $(function(){
           var $label = $('<label>').attr('for', 'user'+i).text('用户' + i),
               $radio = $('<input>').attr({'type':'radio','id':'user'+i,'value':$obj.from,'name':'user',"checked":true});
           $userList.append($radio).append($label);
+          $label.addClass('current').siblings('label').removeClass('current');
           $radio.addClass('hidden').siblings('input:radio').attr('checked', false);
 
           // 切换聊天用户
@@ -75,25 +81,26 @@ $(function(){
           // 绑定已定义函数点击事件只能生效一次，so~
           $radio.on('click', function(){ // 切换聊天用户
             $(this).attr('checked', true).siblings('input:radio').attr('checked', false);
+            $(this).siblings('label').removeClass('current');
+            $(this).next('label').addClass('current')
             var index = $(this).attr('id').substr($(this).attr('id').length-1,1);
             //console.log(index);
             // 将选中的用户聊天框置顶，其他聊天框移去置顶class样式
             $('#show-msg-' + index).addClass('current-user').siblings('div[id^=show-msg]').removeClass('current-user');
-            $('#usernum').text(index);
           });
 
           // 新建聊天框
           var id_name = 'show-msg-' + i;
           var $div  = $('<div>').attr('id', 'show-msg-' + i);
-          $div.addClass('current-user').append($p);
+          $div.addClass('current-user').append($section);
           $showBox.append($div);
           $div.siblings('div[id^=show-msg]').removeClass('current-user');
           $('#usernum').text(i);
         }else{
           // 如果是已经在聊天的用户则找到对应聊天框添加对话
           tag = userNum($obj.from);
-          console.log(tag);
-          $('#show-msg-' + tag).append($p);
+          //console.log(tag);
+          $('#show-msg-' + tag).append($section);
         }
       }else if($obj.type === 'logout'){ // 有用户退出，只有type跟from有值
         cur_users.splice($.inArray($obj.from, cur_users),1);
