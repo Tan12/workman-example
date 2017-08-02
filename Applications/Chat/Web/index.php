@@ -22,6 +22,12 @@
         overflow-x: hidden;
         background-color: white;
       }
+      #show-msg::after{
+        display: block;
+        clear: both;
+        height: 0;
+        content: '';
+      }
       #show-msg section{
         clear: both;
       }

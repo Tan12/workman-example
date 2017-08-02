@@ -96,6 +96,17 @@
       color: #44b549;
       font-weight: bold;
     }
+    /*新消息提醒样式*/
+    .new::after{
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 100%;
+      background-color: red;
+      position: absolute;
+      transform: translate(5px, -5px);
+      z-index: 999;
+    }
 
     /*输入框*/
     #chat-box{

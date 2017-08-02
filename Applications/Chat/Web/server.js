@@ -10,7 +10,7 @@ $(function(){
       $msg = $('#msg'),
       $sm = $('#sm'),
       $message = {},
-      //height = $showMsg1.height(),
+      height = [], // 存储各个聊天框的高度
       cur_users = [], // 当前与客服聊天的所有用户id
       i = 0; // 开启服务后与客服聊天的用户人数，用户登出后不减1，会出现重复数字
 
@@ -35,18 +35,20 @@ $(function(){
       //console.log(JSON.stringify($message));
       console.log($message);
       ws.send(JSON.stringify($message));
-      var $section = $('<section>'),
-          $p = $('<p>').text($msg.val()).addClass('right'),
-          tag = userNum($message.to);
-      //console.log(tag);
-      $section.append($p);
-      $('#show-msg-' + tag).append($section);
+      if($message.to){
+        var $section = $('<section>'),
+            $p = $('<p>').text($msg.val()).addClass('right'),
+            tag = userNum($message.to);
+        //console.log(tag);
+        $section.append($p);
+        var $curDiv = $('#show-msg-' + tag);
+        $curDiv.append($section);
+        if(heightChange($curDiv[0].scrollHeight, tag)){
+          $curDiv.scrollTop(height[tag]);
+        }
+      }
     }
-    // 使滚动条保持在底部，即显示最新消息
-    /*if(heightChange()){
-      $(window).scrollTop(height);
-    }*/
-  return false;
+    return false;
   }); 
 
   ws.onmessage = function(msg){
@@ -82,7 +84,7 @@ $(function(){
           $radio.on('click', function(){ // 切换聊天用户
             $(this).attr('checked', true).siblings('input:radio').attr('checked', false);
             $(this).siblings('label').removeClass('current');
-            $(this).next('label').addClass('current')
+            $(this).next('label').addClass('current').removeClass('new');
             var index = $(this).attr('id').substr($(this).attr('id').length-1,1);
             //console.log(index);
             // 将选中的用户聊天框置顶，其他聊天框移去置顶class样式
@@ -90,17 +92,29 @@ $(function(){
           });
 
           // 新建聊天框
-          var id_name = 'show-msg-' + i;
-          var $div  = $('<div>').attr('id', 'show-msg-' + i);
+          var id_name = 'show-msg-' + i,
+              $div  = $('<div>').attr('id', 'show-msg-' + i);
           $div.addClass('current-user').append($section);
           $showBox.append($div);
           $div.siblings('div[id^=show-msg]').removeClass('current-user');
-          $('#usernum').text(i);
+          height[i] = $div.height(); // 存储每个聊天框的初始高度
         }else{
           // 如果是已经在聊天的用户则找到对应聊天框添加对话
           tag = userNum($obj.from);
-          //console.log(tag);
-          $('#show-msg-' + tag).append($section);
+          var $curDiv = $('#show-msg-' + tag);
+          $curDiv.append($section);
+
+          // 添加消息提醒
+          var $la = $('label[for=user'+ tag +']'),
+              c_name = $la.attr('class').split(' ');
+          if(!in_array(c_name, 'current')){ // 当前聊天框不是要添加消息的地方
+            $la.addClass('new');
+          }
+
+          // 使滚动条置于底端
+          if(heightChange($curDiv[0].scrollHeight, tag)){
+            $curDiv.scrollTop(height[tag]);
+          }
         }
       }else if($obj.type === 'logout'){ // 有用户退出，只有type跟from有值
         cur_users.splice($.inArray($obj.from, cur_users),1);
@@ -133,17 +147,22 @@ $(function(){
         tag = u.substr(u.length-1, 1);
       }
     }
-    return tag;
+    return parseInt(tag);
   }
 
-  // 判断show-msg高度是否发生改变
-  /*function heightChange(){
-      if($showMsg1.height() > height){
-          height = $showMsg1.height();
-          return 1;
-      }
-      return 0;
-  }*/
+  // 判断聊天框高度是否发生改变
+  // $ele：要判断的聊天框对象的总高度
+  // num：聊天框对应的id号
+  function heightChange(h, num){
+    console.log('ok');
+    console.log(h);
+    if(h > height[num]){
+      height[num] = h;
+      console.log(height[num]);
+      return 1;
+    }
+    return 0;
+  }
 
   // 判断数组arr是否包含元素item
   function in_array(arr, item){
@@ -153,13 +172,5 @@ $(function(){
       }
     }
     return 0;
-  }
-
-  // 随机颜色
-  function randColor(){
-    var r=Math.floor(Math.random()*256);
-    var g=Math.floor(Math.random()*256);
-    var b=Math.floor(Math.random()*256);
-    return "rgb("+r+','+g+','+b+")";//所有方法的拼接都可以用ES6新特性`其他字符串{$变量名}`替换
   }
 });
