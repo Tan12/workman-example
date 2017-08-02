@@ -30,7 +30,7 @@ $(function(){
     }else{
       $message.msg = $msg.val(); 
       $message.from = $('#server-list').val();
-      var to = $userList.children("input[type='radio']:checked").val();
+      var to = $userList.find("input[type='radio']:checked").val();
       $message.to = to ? to : '';
       //console.log(JSON.stringify($message));
       console.log($message);
@@ -71,24 +71,45 @@ $(function(){
         if(!in_array(cur_users, $obj.from)){
           cur_users.push($obj.from);
           i++;
+          $userList.find('input:radio').attr('checked', false);
+          $userList.find('label').removeClass('current');
           // 添加到用户列表
-          var $label = $('<label>').attr('for', 'user'+i).text('用户' + i),
-              $radio = $('<input>').attr({'type':'radio','id':'user'+i,'value':$obj.from,'name':'user',"checked":true});
-          $userList.append($radio).append($label);
-          $label.addClass('current').siblings('label').removeClass('current');
-          $radio.addClass('hidden').siblings('input:radio').attr('checked', false);
+          var $div = $('<div>').addClass('tags');
+              $close = $('<span>').text('x').addClass('close'),
+              $label = $('<label>').attr('for', 'user'+i).text('用户' + i).addClass('current'),
+              $radio = $('<input>').attr({'type':'radio','id':'user'+i,'value':$obj.from,'name':'user',"checked":true}).addClass('hidden');
+          $div.append($radio).append($label).append($close);
+          $userList.append($div);
 
           // 切换聊天用户
           // 绑定点击事件，当前函数之外绑定无效
           // 绑定已定义函数点击事件只能生效一次，so~
           $radio.on('click', function(){ // 切换聊天用户
-            $(this).attr('checked', true).siblings('input:radio').attr('checked', false);
-            $(this).siblings('label').removeClass('current');
+            $userList.find('label').removeClass('current');
+            $userList.find('input:radio').attr('checked', false);
+            $(this).attr('checked', true);
             $(this).next('label').addClass('current').removeClass('new');
             var index = $(this).attr('id').substr($(this).attr('id').length-1,1);
             //console.log(index);
             // 将选中的用户聊天框置顶，其他聊天框移去置顶class样式
             $('#show-msg-' + index).addClass('current-user').siblings('div[id^=show-msg]').removeClass('current-user');
+          });
+
+          // 关闭事件
+          // 只有用户退出后才能关闭聊天框
+          $('.close').on('click', function(){
+            console.log('close');
+            var del_u = $(this).siblings('label').attr('for'),
+                del_n = del_u.substr(del_u.length-1, 1);
+            // 从用户列表中移除退出的用户
+            $(this).parent('div').remove();
+            // 移除聊天框
+            $('#show-msg-' + del_n).remove();
+            // 将当前用户列表中的第一个用户置顶
+            $userList.children('div').eq(0).addClass('current');
+            var top_u = $userList.children('div').eq(0).children('label').attr('for'),
+                top_n = top_u.substr(top_u.length-1, 1);
+            $('#show-msg-' + top_n).addClass('current-user');
           });
 
           // 新建聊天框
@@ -105,9 +126,8 @@ $(function(){
           $curDiv.append($section);
 
           // 添加消息提醒
-          var $la = $('label[for=user'+ tag +']'),
-              c_name = $la.attr('class').split(' ');
-          if(!in_array(c_name, 'current')){ // 当前聊天框不是要添加消息的地方
+          var $la = $('label[for=user'+ tag +']');
+          if(!$la.hasClass('current')){ // 当前聊天框不是要添加消息的地方
             $la.addClass('new');
           }
 
@@ -117,16 +137,18 @@ $(function(){
           }
         }
       }else if($obj.type === 'logout'){ // 有用户退出，只有type跟from有值
-        cur_users.splice($.inArray($obj.from, cur_users),1);
-        console.log(cur_users);
-        var x = 0, 
-            $list = $userList.children('input[type="radio"]'),
-            l = $list.length;
-        // 从用户列表中移除退出的用户
-        for(x; x < l; x++){
-          if($list.eq(x).val() === $obj.from){
-            $list.eq(x).next('label').remove();
-            $list.eq(x).remove();
+        console.log($obj.from + 'logout');
+        
+        // 离开用户的聊天界面提示“用户离开”
+        var $list = $userList.find('input');
+        for(var i = 0, n = list.length; i < n; i++){
+          if($list.eq(i).val() === $obj.from){
+            var u = $list.eq(i).siblings('label').attr('for'),
+                n = u.substr(u.length-1, 1);
+            var $section = $('<section>'),
+                $p = $('<p>').text('该用户已离开').addClass('center');
+            $section.append($p);
+            $('#show-msg-' + n).append($section);
           }
         }
       }
@@ -138,7 +160,7 @@ $(function(){
   // 返回uid对应的是用户几
   function userNum(uid){
     var x = 0, 
-        $list = $userList.children('input[type="radio"]'),
+        $list = $userList.find('input[type="radio"]'),
         l = $list.length,
         tag; // 用户n
     for(x; x < l; x++){
@@ -154,11 +176,9 @@ $(function(){
   // $ele：要判断的聊天框对象的总高度
   // num：聊天框对应的id号
   function heightChange(h, num){
-    console.log('ok');
     console.log(h);
     if(h > height[num]){
       height[num] = h;
-      console.log(height[num]);
       return 1;
     }
     return 0;

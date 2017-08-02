@@ -68,7 +68,6 @@
     }
     #user-list{
       margin-top: 30px;
-      padding: 10px 0;
     }
     .current-user{
       z-index: 1024;
@@ -76,17 +75,22 @@
     .hidden{
       display: none;
     }
+
     input[type=radio]{
       margin: 0;
     }
     label{
+      cursor: pointer;
+    }
+    .tags{
+      display: inline-block;
       border: 1px solid #333;
+      border-bottom-color: transparent;
       color: #9c9c9c;
       padding: 10px 20px;
       border-radius: 10px 10px 0 0;
-      cursor: pointer;
     }
-    label:nth-of-type(n+2){
+    #user-list div:nth-of-type(n+2){
       margin-left: -5px;
       border-left: transparent;
     }
@@ -97,15 +101,24 @@
       font-weight: bold;
     }
     /*新消息提醒样式*/
-    .new::after{
+    .new::before{
       content: '';
       width: 10px;
       height: 10px;
       border-radius: 100%;
       background-color: red;
       position: absolute;
-      transform: translate(5px, -5px);
+      transform: translate(-12px,-5px);
       z-index: 999;
+    }
+    /*关闭按钮样式*/
+    .close{
+      color: red;
+      font-size: 20px;
+      display: inline-block;
+      transform: translate(8px, -1px);
+      cursor: pointer;
+      display: none;
     }
 
     /*输入框*/
@@ -122,6 +135,7 @@
       padding: 6px 20px;
       background-color: white;
       border: 1px solid #44b549;
+      cursor: pointer;
     }
     #msg,
     #sm{

@@ -79,6 +79,7 @@
         padding: 6px 20px;
         background-color: white;
         border: 1px solid #44b549;
+        cursor: pointer;
       }
       #msg,
       #sm{
