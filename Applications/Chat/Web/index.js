@@ -1,13 +1,22 @@
 $(function(){
-  ws = new WebSocket("ws://"+document.domain+":2333");
-  ws.onopen = function() {
-      console.log("连接成功");
-  };
+  var ws,
+      $select = $('.select');
+  $('#click-me').click(function(){
+    $select.fadeIn(300);
+
+    ws = new WebSocket("ws://"+document.domain+":2333");
+    ws.onopen = open;
+    ws.onmessage = getMessage;
+  });  
+
+  function open(){
+    ws.send('userlink');
+    console.log("连接成功");
+  }
   var $showMsg = $('#show-msg'),
       $chatBox = $('#chat-box'),
       $msg = $('#msg'),
       $sm = $('#sm'),
-      $serverList = $('#server-list'),
       $message = {},
       height = $showMsg.height();
 
@@ -19,6 +28,7 @@ $(function(){
 
   // 表单提交
   $chatBox.submit(function(){
+    var $serverList = $('#server-list');
     if(!$msg.val()){
       alert('请输入内容~');
     }else{
@@ -38,9 +48,9 @@ $(function(){
     }
     return false;
   }); 
-  ws.onmessage = function(msg){
-    //console.log(msg);
-    var $data = msg.data,
+  function getMessage(data){
+    console.log(data);
+    var $data = data.data,
         $user2, $section, $p,
         $obj;
 
@@ -59,11 +69,42 @@ $(function(){
         if(heightChange()){
           $showMsg.scrollTop(height);
         }
+      }else if($obj.type === 'online'){ // $obj.online包含了在线客服的号码，not the only id
+
+        console.log($obj.online);
+        if($obj.online){
+          var $sel = $('<select>').attr('id', 'server-list'),
+              $option,
+              $p = $('<p>').text('请选择客服：'),
+              $btn = $('<button>').attr('id', 'begin-chat').text('开始聊天');
+          $select.children('select').remove();
+          for(var i = 0, n = $obj.online.length; i < n; i++){
+            $option = $('<option>').val($obj.online[i]).text('客服'+ $obj.online[i]);
+            $sel.append($option);
+          }
+          $select.empty().append($p).append($sel).append($btn);
+
+          $btn.on('click', function(){
+            $showMsg.empty();
+            $('.chat-container').fadeIn(300);
+            $('#s_num').text($('#server-list').val());
+            $('.ask-me').hide();
+            $select.hide();
+          })
+        }else{
+          var $p = $('<p>').text('当前没有客服在线，请稍后再试哦~')
+          $select.empty().append($p);
+        }
       }
     }else{
       console.log($data);
     }
   };
+
+  $('.close').on('click', function(){
+    $('.chat-container').hide();
+    $('.ask-me').fadeIn(300);
+  });
 
   // 判断show-msg高度是否发生改变
   function heightChange(){

@@ -1,8 +1,4 @@
 $(function(){
-  ws = new WebSocket("ws://"+document.domain+":2333");
-  ws.onopen = function() {
-      console.log("连接成功");
-  };
   var $userList = $('#user-list'),
       $showBox = $('.show-box'),
       //$showMsg1 = $('#show-msg-1'),
@@ -21,7 +17,13 @@ $(function(){
   $message.time = '';
   $message.userlist = []; // 当前对话的用户id
 
-  //ws.send(JSON.stringify($message));
+  ws = new WebSocket("ws://"+document.domain+":2333");
+  ws.onopen = function() {
+    console.log("连接成功");
+    //$message.msg = $msg.val(); 
+    //$message.from = $('#server-list').val();
+    //ws.send(JSON.stringify($message));
+  };
 
   // 表单提交
   $chatBox.submit(function(){

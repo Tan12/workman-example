@@ -4,15 +4,39 @@
     <title>客户端</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <style>
+      body{
+        background-color: lightblue;
+      }
+      .ask-me{
+        width: 150px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      #click-me,
+      #begin-chat{
+        background-color: white;
+        border: 1px solid #333;
+        padding: 10px 15px;
+        cursor: pointer;
+        outline: none;/*去掉点击后的边框*/
+      }
+      #click-me:hover{
+        background-color: #44b549;
+        border-color: #44b549;
+        color: white;
+      }
       .select{
         width: 100px;
         margin: 0 auto;
+        display: none;
       }
-      .container{
+      .chat-container{
         width: 520px;
         margin: 0 auto;
         margin-top: 20px;
         border: 1px solid #333;
+        background-color: white;
+        display: none;
       }
       #show-msg{
         width: 500px;
@@ -20,7 +44,6 @@
         margin: 10px;
         overflow-y: auto;
         overflow-x: hidden;
-        background-color: white;
       }
       #show-msg::after{
         display: block;
@@ -85,23 +108,41 @@
       #sm{
         border-radius: 5px;
       }
+
+      p.title{
+        width: 100%;
+        background-color: #eee;
+        padding: 10px 0;
+        text-align: center;
+        margin: 0;
+      }
+      p.title span.close{
+        float: right;
+        color: red;
+        margin-right: 10px;
+        cursor: pointer;
+      }
     </style>
 </head>
 <body>
-<div class="select">
-  <p>请选择客服：</p>
-  <select id="server-list">
-    <option value="001">客服1</option>
-    <option value="002">客服2</option>
-  </select>
+<div class="ask-me">
+  <button id="click-me">有问题点我</button>
 </div>
+<div class="select"></div>
 
-<div class="container">
-    <div id="show-msg"></div>
-    <form id="chat-box">
-        <input id="msg" type="text" name="message" />
-        <input id="sm" type="submit" name="submit" value="提交" />
-    </form>
+<div class="chat-container">
+  <p class="title">客服
+    <span id="s_num"></span>
+    <span class="close">&#10006</span>
+  </p>
+
+  <!--聊天框-->
+  <div id="show-msg"></div>
+  
+  <form id="chat-box">
+      <input id="msg" type="text" name="message" />
+      <input id="sm" type="submit" name="submit" value="提交" />
+  </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
