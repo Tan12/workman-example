@@ -20,7 +20,7 @@ $(function(){
   // 表单提交
   $chatBox.submit(function(){
     if(!$msg.val()){
-      alert('please input something.');
+      alert('请输入内容~');
     }else{
       $message.to = $serverList.val();
       $message.msg = $msg.val();   
@@ -31,6 +31,7 @@ $(function(){
           $p = $('<p>').text($msg.val()).addClass('right');
       $section.append($p),
       $showMsg.append($section);
+      $msg.val('');
     }
     if(heightChange()){
       $showMsg.scrollTop(height);

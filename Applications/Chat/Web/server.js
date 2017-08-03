@@ -26,7 +26,7 @@ $(function(){
   // 表单提交
   $chatBox.submit(function(){
     if(!$msg.val()){
-      alert('please input something.');
+      alert('请输入内容~');
     }else{
       $message.msg = $msg.val(); 
       $message.from = $('#server-list').val();
@@ -47,6 +47,7 @@ $(function(){
           $curDiv.scrollTop(height[tag]);
         }
       }
+      $msg.val('');
     }
     return false;
   }); 
@@ -75,7 +76,7 @@ $(function(){
           $userList.find('label').removeClass('current');
           // 添加到用户列表
           var $div = $('<div>').addClass('tags');
-              $close = $('<span>').text('x').addClass('close'),
+              $close = $('<span>').text('x').addClass('close').hide(),
               $label = $('<label>').attr('for', 'user'+i).text('用户' + i).addClass('current'),
               $radio = $('<input>').attr({'type':'radio','id':'user'+i,'value':$obj.from,'name':'user',"checked":true}).addClass('hidden');
           $div.append($radio).append($label).append($close);
@@ -105,11 +106,16 @@ $(function(){
             $(this).parent('div').remove();
             // 移除聊天框
             $('#show-msg-' + del_n).remove();
+
             // 将当前用户列表中的第一个用户置顶
-            $userList.children('div').eq(0).addClass('current');
-            var top_u = $userList.children('div').eq(0).children('label').attr('for'),
-                top_n = top_u.substr(top_u.length-1, 1);
-            $('#show-msg-' + top_n).addClass('current-user');
+            if($userList.children('div')){
+              $userList.find('label').removeClass('current');
+              $showBox.children('div').removeClass('current-user');
+              $userList.children('div').eq(0).children('label').addClass('current');
+              var top_u = $userList.children('div').eq(0).children('label').attr('for'),
+                  top_n = top_u.substr(top_u.length-1, 1);
+              $('#show-msg-' + top_n).addClass('current-user');
+            }
           });
 
           // 新建聊天框
@@ -141,14 +147,15 @@ $(function(){
         
         // 离开用户的聊天界面提示“用户离开”
         var $list = $userList.find('input');
-        for(var i = 0, n = list.length; i < n; i++){
-          if($list.eq(i).val() === $obj.from){
-            var u = $list.eq(i).siblings('label').attr('for'),
+        for(var j = 0, n = $list.length; j < n; j++){
+          if($list.eq(j).val() === $obj.from){
+            var u = $list.eq(j).siblings('label').attr('for'),
                 n = u.substr(u.length-1, 1);
             var $section = $('<section>'),
-                $p = $('<p>').text('该用户已离开').addClass('center');
+                $p = $('<p>').text('系统提示：该用户已离开').addClass('center');
             $section.append($p);
             $('#show-msg-' + n).append($section);
+            $list.eq(j).siblings('span').show();
           }
         }
       }
@@ -186,8 +193,8 @@ $(function(){
 
   // 判断数组arr是否包含元素item
   function in_array(arr, item){
-    for(var i = 0, l = arr.length; i < l; i++){
-      if(arr[i] === item){
+    for(var j = 0, l = arr.length; j < l; j++){
+      if(arr[j] === item){
         return 1;
       }
     }

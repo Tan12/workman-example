@@ -33,7 +33,8 @@
     .show-box section{
       clear: both;
     }
-    .show-box p{
+    .show-box p.left,
+    .show-box p.right{
       background-color: lightblue;
       max-width: 600px;
       padding: 5px;
@@ -65,6 +66,13 @@
     .show-box p.right::before{
       border-left-color: lightblue;
       right: -15px;
+    }
+    .show-box p.center{ /*系统提示*/
+      width: 100%;
+      text-align: center;
+      font-size: .8rem;
+      background-color: #e6e6e6;
+      padding: 5px;
     }
     #user-list{
       margin-top: 30px;
@@ -114,11 +122,9 @@
     /*关闭按钮样式*/
     .close{
       color: red;
-      font-size: 20px;
       display: inline-block;
       transform: translate(8px, -1px);
       cursor: pointer;
-      display: none;
     }
 
     /*输入框*/
