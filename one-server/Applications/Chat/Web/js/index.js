@@ -1,13 +1,22 @@
 $(function(){
-  var ws = new WebSocket("ws://"+document.domain+":2333"),
-      $showMsg = $('#show-msg');
+  var ws = new WebSocket("ws://"+document.domain+":10081"),
+      $showMsg = $('#show-msg'),
+      flag = 1; // 客服是否在线
 
   ws.onopen = open;
   ws.onmessage = getMessage;
 
+  // 移动
+  var move = new AdMove("ask-me", true);
+  move.Run();
+
   $('#click-me').click(function(){
-    $('.chat-container').fadeIn(300);
-    $('.ask-me').hide();
+    if(flag){
+      $('.chat-container').fadeIn(300);
+      $('#ask-me').hide();
+    }else{
+      alert('当前没有客服在线，请稍后再试哦~');
+    }
   });  
 
   function open(){
@@ -27,7 +36,7 @@ $(function(){
   $message.time = '';
 
   // 表单提交
-  $chatBox.submit(function(){
+  $sm.on('click', function(){
     if(!$msg.val()){
       alert('请输入内容~');
     }else{
@@ -39,15 +48,15 @@ $(function(){
       $section.append($p),
       $showMsg.append($section);
       $msg.val('');
-    }
-    if(heightChange()){
-      $showMsg.scrollTop(height);
+      if(heightChange()){
+        $showMsg.scrollTop(height);
+      }
     }
     return false;
   }); 
 
   function getMessage(data){
-    //console.log(data);
+    console.log(data);
     var $data = data.data,
         $user2, $section, $p,
         $obj;
@@ -69,9 +78,10 @@ $(function(){
         }
       }else if($obj.type === 'online'){ // $obj.online包含了在线客服的号码
         if($obj.online){
+          flag = 1;
           $message.to = $obj.online[0]; // 目前只有一个客服
         }else{
-          alert('当前没有客服在线，请稍后再试哦~');
+          flag = 0;
         }
       }
     }else{
@@ -81,7 +91,7 @@ $(function(){
 
   $('.close').on('click', function(){
     $('.chat-container').hide();
-    $('.ask-me').fadeIn(300);
+    $('#ask-me').fadeIn(300);
   });
 
   // 判断show-msg高度是否发生改变

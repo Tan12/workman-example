@@ -8,7 +8,7 @@ $(function(){
       $message = {},
       height = [], // 存储各个聊天框的高度
       cur_users = [], // 当前与客服聊天的所有用户id
-      i = 0; // 开启服务后与客服聊天的用户人数，用户登出后不减1，会出现重复数字
+      num = 0; // 开启服务后与客服聊天的用户人数，用户登出后不减1，会出现重复数字
 
   $message.type = 'server'; // 发消息的人
   $message.msg = ''; // 消息内容
@@ -17,7 +17,7 @@ $(function(){
   $message.time = '';
   $message.userlist = []; // 当前对话的用户id
 
-  var ws = new WebSocket("ws://"+document.domain+":2333");
+  var ws = new WebSocket("ws://"+document.domain+":10081");
   ws.onopen = function() {
     console.log("连接成功");
     ws.send(JSON.stringify($message));
@@ -52,7 +52,7 @@ $(function(){
   }); 
 
   ws.onmessage = function(msg){
-    //console.log(msg);
+    console.log(msg);
     var $data = msg.data,
         $user2,
         $obj,
@@ -70,14 +70,14 @@ $(function(){
         // 如果是新用户则添加到用户列表，且新建一个聊天框
         if(!in_array(cur_users, $obj.from)){
           cur_users.push($obj.from);
-          i++;
+          num++;
           $userList.find('input:radio').attr('checked', false);
           $userList.find('label').removeClass('current');
           // 添加到用户列表
           var $div = $('<div>').addClass('tags');
               $close = $('<span>').text('x').addClass('close').hide(),
-              $label = $('<label>').attr('for', 'user'+i).text('用户' + i).addClass('current'),
-              $radio = $('<input>').attr({'type':'radio','id':'user'+i,'value':$obj.from,'name':'user',"checked":true}).addClass('hidden');
+              $label = $('<label>').attr('for', 'user'+num).text('用户' + num).addClass('current'),
+              $radio = $('<input>').attr({'type':'radio','id':'user'+num,'value':$obj.from,'name':'user',"checked":true}).addClass('hidden');
           $div.append($radio).append($label).append($close);
           $userList.append($div);
 
@@ -117,12 +117,12 @@ $(function(){
           });
 
           // 新建聊天框
-          var id_name = 'show-msg-' + i,
-              $div  = $('<div>').attr('id', 'show-msg-' + i);
+          var id_name = 'show-msg-' + num,
+              $div  = $('<div>').attr('id', 'show-msg-' + num);
           $div.addClass('current-user').append($section);
           $showBox.append($div);
           $div.siblings('div[id^=show-msg]').removeClass('current-user');
-          height[i] = $div.height(); // 存储每个聊天框的初始高度
+          height[num] = $div.height(); // 存储每个聊天框的初始高度
         }else{
           // 如果是已经在聊天的用户则找到对应聊天框添加对话
           tag = userNum($obj.from);
@@ -179,11 +179,11 @@ $(function(){
 
   // 判断聊天框高度是否发生改变
   // $ele：要判断的聊天框对象的总高度
-  // num：聊天框对应的id号
-  function heightChange(h, num){
+  // n：聊天框对应的id号
+  function heightChange(h, n){
     //console.log(h);
-    if(h > height[num]){
-      height[num] = h;
+    if(h > height[n]){
+      height[n] = h;
       return 1;
     }
     return 0;

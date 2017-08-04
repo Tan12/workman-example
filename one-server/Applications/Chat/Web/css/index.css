@@ -1,0 +1,132 @@
+body{
+  background-color: lightblue;
+}
+input{
+  padding: 0;
+}
+#ask-me{
+  left: -999px; /*将按钮置于不可见区域，避免刷新时出现残影*/
+  text-align: center;
+  position: absolute;
+  border: 1px solid #333;
+  background-color: white;
+}
+.s-img{
+  width: 60px;
+  height: 60px;
+  margin: 10px auto;
+  display: block;
+}
+#click-me{
+  background-color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  outline: none;/*去掉点击后的边框*/
+}
+#click-me:hover{
+  color: #44b549;
+}
+.select{
+  width: 100px;
+  margin: 0 auto;
+  display: none;
+}
+.chat-container{
+  width: 520px;
+  margin-top: 20px;
+  border: 1px solid #333;
+  background-color: white;
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  display: none;
+}
+#show-msg{
+  width: 500px;
+  height: 500px;
+  margin: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#show-msg::after{
+  display: block;
+  clear: both;
+  height: 0;
+  content: '';
+}
+#show-msg section{
+  clear: both;
+}
+#show-msg p{
+  background-color: lightblue;
+  max-width: 420px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  position:relative;
+  vertical-align: top;
+  word-wrap:break-word
+}
+#show-msg p.left{
+  margin-left: 10px;
+}
+#show-msg p.left::before,
+#show-msg p.right::before{
+  content: '';
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  position: absolute;
+}
+#show-msg p.left::before{
+  border-right-color: lightblue;
+  /*transform: translateX(-20px); IE不兼容*/
+  left: -15px;
+}
+#show-msg p.right{
+  margin-right: 10px;
+  float: right;
+}
+#show-msg p.right::before{
+  border-left-color: lightblue;
+  right: -15px;
+}
+
+/*输入框*/
+#chat-box{
+  text-align: center;
+  margin: 10px 0;
+}
+#msg{
+  width: 80%;
+  border: 1px solid #44b549;
+  padding: 8px 5px;
+  height: 15px;
+}
+#sm{
+  padding: 6px 20px;
+  background-color: white;
+  border: 1px solid #44b549;
+  cursor: pointer;
+  height: 34px;
+  margin-top: 1px;
+}
+#msg,
+#sm{
+  border-radius: 5px;
+}
+
+p.title{
+  width: 100%;
+  background-color: #eee;
+  padding: 10px 0;
+  text-align: center;
+  margin: 0;
+}
+p.title span.close{
+  float: right;
+  color: red;
+  margin-right: 10px;
+  cursor: pointer;
+}

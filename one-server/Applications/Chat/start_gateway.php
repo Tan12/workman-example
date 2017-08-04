@@ -19,7 +19,7 @@ use \Workerman\Autoloader;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 // gateway 进程
-$gateway = new Gateway("Websocket://0.0.0.0:2333");
+$gateway = new Gateway("Websocket://0.0.0.0:10081");
 // 设置名称，方便status时查看
 $gateway->name = 'ChatGateway';
 // 设置进程数，gateway进程数建议与cpu核数相同
